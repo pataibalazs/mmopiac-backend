@@ -1,15 +1,17 @@
-const cool = require("cool-ascii-faces");
 const express = require("express");
-const path = require("path");
+const http = require("http");
+const { Server } = require("socket.io");
 const bodyParser = require("body-parser");
+const path = require("path");
 
 const PORT = process.env.PORT || 5001;
-
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 
 app
   .use(express.static(path.join(__dirname, "public")))
-  .use(bodyParser.json()) // Middleware to parse JSON bodies
+  .use(bodyParser.json())
   .set("views", path.join(__dirname, "views"))
   .set("view engine", "ejs")
   .get("/", (req, res) => res.render("pages/index"))
@@ -39,8 +41,10 @@ app
     const webhookData = req.body;
     console.log("Received webhook:", webhookData);
 
-    // Process the webhook data as needed
-    // For example, you can validate the data or trigger other actions
+    if (webhookData.eventName === "order.completed") {
+      // Emit to all connected clients (you could target specific clients based on a session or identifier)
+      io.emit("order-completed", { orderId: webhookData.orderId });
+    }
 
     res.status(200).send("Webhook received successfully");
   });
