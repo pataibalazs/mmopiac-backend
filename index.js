@@ -17,7 +17,7 @@ app
       {
         id: "metin-gold",
         name: "METIN2 ARANY",
-        price: 12.11,
+        price: 10,
         customFields: [],
         url: "https://thawing-dawn-87843-f5b692533558.herokuapp.com/product-validation",
       },
