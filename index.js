@@ -14,24 +14,22 @@ app
   .get("/cool", (req, res) => res.send(cool()))
   .get("/product-validation", (req, res) => {
     const products = [
-      [
-        {
-          id: "metin-gold",
-          name: "METIN2 ARANY",
-          price: 10,
-          description:
-            "High-quality replica of The Starry Night by the Dutch post-impressionist painter Vincent van Gogh.",
-          image: "./metin2-gold.webp",
-        },
-        {
-          id: "solaris-gold",
-          name: "SOLARIS ARANY",
-          price: 20,
-          description:
-            "High-quality replica of The Starry Night by the Dutch post-impressionist painter Vincent van Gogh.",
-          image: "./solaris-gold.webp",
-        },
-      ],
+      {
+        id: "metin-gold",
+        name: "METIN2 ARANY",
+        price: 10,
+        description:
+          "High-quality replica of The Starry Night by the Dutch post-impressionist painter Vincent van Gogh.",
+        image: "./metin2-gold.webp",
+      },
+      {
+        id: "solaris-gold",
+        name: "SOLARIS ARANY",
+        price: 20,
+        description:
+          "High-quality replica of The Starry Night by the Dutch post-impressionist painter Vincent van Gogh.",
+        image: "./solaris-gold.webp",
+      },
     ];
     res.json(products);
   });
