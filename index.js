@@ -1,6 +1,7 @@
 const cool = require("cool-ascii-faces");
 const express = require("express");
 const path = require("path");
+const bodyParser = require("body-parser");
 
 const PORT = process.env.PORT || 5001;
 
@@ -8,6 +9,7 @@ const app = express();
 
 app
   .use(express.static(path.join(__dirname, "public")))
+  .use(bodyParser.json()) // Middleware to parse JSON bodies
   .set("views", path.join(__dirname, "views"))
   .set("view engine", "ejs")
   .get("/", (req, res) => res.render("pages/index"))
@@ -32,6 +34,15 @@ app
       },
     ];
     res.json(products);
+  })
+  .post("/webhook", (req, res) => {
+    const webhookData = req.body;
+    console.log("Received webhook:", webhookData);
+
+    // Process the webhook data as needed
+    // For example, you can validate the data or trigger other actions
+
+    res.status(200).send("Webhook received successfully");
   });
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
