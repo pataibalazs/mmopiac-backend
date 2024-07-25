@@ -3,11 +3,20 @@ const http = require("http");
 const { Server } = require("socket.io");
 const bodyParser = require("body-parser");
 const path = require("path");
+const cors = require("cors");
 
 const PORT = process.env.PORT || 5001;
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+
+// Use CORS middleware
+app.use(cors({ origin: "http://localhost:3000" }));
 
 app
   .use(express.static(path.join(__dirname, "public")))
@@ -49,4 +58,4 @@ app
     res.status(200).send("Webhook received successfully");
   });
 
-app.listen(PORT, () => console.log(`Listening on ${PORT}`));
+server.listen(PORT, () => console.log(`Listening on ${PORT}`));
