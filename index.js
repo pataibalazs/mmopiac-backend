@@ -53,7 +53,7 @@ app
     if (webhookData.eventName === "order.completed") {
       console.log("req body");
       console.log(req.body);
-      const orderData = JSON.parse(data);
+      const orderData = JSON.parse(req.body);
       io.emit("order-completed", { orderId: orderData.content.invoiceNumber });
     }
 
