@@ -46,6 +46,7 @@ app
     ];
     res.json(products);
   })
+  .use(bodyParser.json())
   .post("/webhook", (req, res) => {
     const webhookData = req.body;
     console.log("Received webhook:", webhookData);
@@ -53,11 +54,19 @@ app
     if (webhookData.eventName === "order.completed") {
       console.log("req body");
       console.log(req.body);
-      const orderData = JSON.parse(req.body);
-      io.emit("order-completed", { orderId: orderData.content.invoiceNumber });
+
+      // Directly accessing the invoice number without parsing JSON again
+      const invoiceNumber = webhookData.content.invoiceNumber;
+      io.emit("order-completed", { orderId: invoiceNumber });
+
+      console.log(`Order completed with invoice number: ${invoiceNumber}`);
     }
 
     res.status(200).send("Webhook received successfully");
   });
+
+http.listen(3000, () => {
+  console.log("Server is listening on port 3000");
+});
 
 server.listen(PORT, () => console.log(`Listening on ${PORT}`));
