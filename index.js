@@ -47,14 +47,14 @@ app
     res.json(products);
   })
   .post("/webhook", (req, res) => {
-    console.log("req body");
-    console.log(req.body);
     const webhookData = req.body;
     console.log("Received webhook:", webhookData);
 
     if (webhookData.eventName === "order.completed") {
-      // Emit to all connected clients (you could target specific clients based on a session or identifier)
-      io.emit("order-completed", { orderId: webhookData.orderId });
+      console.log("req body");
+      console.log(req.body);
+      const orderData = JSON.parse(data);
+      io.emit("order-completed", { orderId: orderData.content.invoiceNumber });
     }
 
     res.status(200).send("Webhook received successfully");
