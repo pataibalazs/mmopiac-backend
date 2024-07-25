@@ -47,10 +47,8 @@ app
     res.json(products);
   })
   .post("/webhook", (req, res) => {
-    console.log("req");
-    console.log(req);
-    console.log("res");
-    console.log(res);
+    console.log("req body");
+    console.log(req.body);
     const webhookData = req.body;
     console.log("Received webhook:", webhookData);
 
