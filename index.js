@@ -4,6 +4,7 @@ const { Server } = require("socket.io");
 const bodyParser = require("body-parser");
 const path = require("path");
 const cors = require("cors");
+const { Client } = require("pg");
 
 const PORT = process.env.PORT || 5001;
 const app = express();
@@ -14,6 +15,14 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+const client = new Client({
+  connectionString:
+    "postgres://ubr97dmu2sd6o5:p55c8bfb84079b0b4cbfbe8506f99a7f411aa624fe02b2711fcaa24a2ebfa8b8c@c3gtj1dt5vh48j.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/dfmvbflf6oqohj",
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
+client.connect();
 
 // Use CORS middleware
 app.use(cors({ origin: "http://localhost:3000" }));
@@ -63,6 +72,51 @@ app
     }
 
     res.status(200).send("Webhook received successfully");
+  })
+  .get("/db/get_comments", async (req, res) => {
+    try {
+      const result = await client.query(
+        `
+        SELECT * from user_comments
+
+        `
+      );
+      res.json(result.rows);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+  .get("/db/insert_comment", async (req, res) => {
+    const { username, comment_text } = req.query;
+
+    if (!username || !comment_text) {
+      return res
+        .status(400)
+        .json({ error: "Username and comment text are required" });
+    }
+
+    // http://localhost:5001/db/insert_comment?username=something&comment_text=this+is+a+comment
+    try {
+      await client.query(
+        `
+        INSERT INTO user_comments (username, comment_text)
+        VALUES ($1, $2)
+        `,
+        [username, comment_text]
+      );
+
+      const result = await client.query(
+        `
+        SELECT * FROM user_comments
+        `
+      );
+
+      res.json(result.rows);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   });
 
 server.listen(PORT, () => console.log(`Listening on ${PORT}`));
