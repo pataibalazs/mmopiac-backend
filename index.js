@@ -78,7 +78,6 @@ app
       const result = await client.query(
         `
         SELECT * from user_comments
-
         `
       );
       res.json(result.rows);
@@ -87,23 +86,57 @@ app
       res.status(500).json({ error: "Internal Server Error" });
     }
   })
-  .get("/db/insert_comment", async (req, res) => {
-    const { username, comment_text } = req.query;
+  .post("/db/insert_comment", async (req, res) => {
+    const { username, comment_text, rating, comment_date } = req.body;
 
-    if (!username || !comment_text) {
-      return res
-        .status(400)
-        .json({ error: "Username and comment text are required" });
+    if (!username || !comment_text || !rating || !comment_date) {
+      return res.status(400).json({
+        error: "Username, comment text, rating, and comment date are required",
+      });
     }
 
-    // http://localhost:5001/db/insert_comment?username=something&comment_text=this+is+a+comment
+    // Validate rating to be an integer between 1 and 5
+    const ratingInt = parseInt(rating, 10);
+    if (isNaN(ratingInt) || ratingInt < 1 || ratingInt > 5) {
+      return res
+        .status(400)
+        .json({ error: "Rating must be an integer between 1 and 5" });
+    }
+
+    // Validate comment_date to be in MMM-DD-YYYY format
+    const dateRegex =
+      /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\d{2}-\d{4}$/;
+    if (!dateRegex.test(comment_date)) {
+      return res
+        .status(400)
+        .json({ error: "Comment date must be in MMM-DD-YYYY format" });
+    }
+
+    // Convert comment_date to a standard date format (YYYY-MM-DD) for PostgreSQL
+    const months = {
+      Jan: "01",
+      Feb: "02",
+      Mar: "03",
+      Apr: "04",
+      May: "05",
+      Jun: "06",
+      Jul: "07",
+      Aug: "08",
+      Sep: "09",
+      Oct: "10",
+      Nov: "11",
+      Dec: "12",
+    };
+    const [month, day, year] = comment_date.split("-");
+    const formattedDate = `${year}-${months[month]}-${day}`;
+
     try {
       await client.query(
         `
-        INSERT INTO user_comments (username, comment_text)
-        VALUES ($1, $2)
+        INSERT INTO user_comments (username, comment_text, rating, comment_date)
+        VALUES ($1, $2, $3, $4)
         `,
-        [username, comment_text]
+        [username, comment_text, ratingInt, formattedDate]
       );
 
       const result = await client.query(
