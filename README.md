@@ -17,7 +17,7 @@ $ npm start
 
 Your app should now be running on [localhost:5001](http://localhost:5001/).
 
-## Deploying to Heroku
+## Deploying to Herokus
 
 Using resources for this example app counts towards your usage. [Delete your app](https://devcenter.heroku.com/articles/heroku-cli-commands#heroku-apps-destroy) and [database](https://devcenter.heroku.com/articles/heroku-postgresql#removing-the-add-on) as soon as you are done experimenting to control costs.
 
