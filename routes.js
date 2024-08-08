@@ -41,7 +41,9 @@ const setupRoutes = (app, io, client) => {
 
   app.get("/db/get_comments", async (req, res) => {
     try {
-      const result = await client.query("SELECT * FROM user_comments ORDER BY comment_date DESC");
+      const result = await client.query(
+        "SELECT * FROM user_comments ORDER BY comment_date DESC"
+      );
       res.json(result.rows);
     } catch (err) {
       console.error(err);
@@ -117,16 +119,6 @@ const setupRoutes = (app, io, client) => {
       const result = await client.query(
         "SELECT * FROM user_comments WHERE rating = 5 ORDER BY comment_date DESC LIMIT 3"
       );
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
-
-  app.get("/db/get_homepage_comments", async (req, res) => {
-    try {
-      const result = await client.query("SELECT * FROM user_comments WHERE rating = 5 ORDER BY comment_date DESC LIMIT 3");
       res.json(result.rows);
     } catch (err) {
       console.error(err);
